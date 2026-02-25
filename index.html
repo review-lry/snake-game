@@ -21,6 +21,12 @@
             padding: 20px;
         }
 
+        .game-wrapper {
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+        }
+
         .game-container {
             background: rgba(255, 255, 255, 0.95);
             border-radius: 20px;
@@ -110,6 +116,98 @@
             transform: scale(0.95);
         }
 
+        /* 排行榜样式 */
+        .leaderboard {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            width: 280px;
+            max-height: 520px;
+            overflow-y: auto;
+        }
+
+        .leaderboard h2 {
+            color: #333;
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .leaderboard-list {
+            list-style: none;
+        }
+
+        .leaderboard-item {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 10px 15px;
+            margin: 8px 0;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: transform 0.2s;
+        }
+
+        .leaderboard-item:hover {
+            transform: translateX(5px);
+        }
+
+        .leaderboard-item.top-1 {
+            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+            font-weight: bold;
+        }
+
+        .leaderboard-item.top-2 {
+            background: linear-gradient(135deg, #c0c0c0 0%, #e8e8e8 100%);
+        }
+
+        .leaderboard-item.top-3 {
+            background: linear-gradient(135deg, #cd7f32 0%, #e5a86b 100%);
+        }
+
+        .rank {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #667eea;
+            min-width: 30px;
+        }
+
+        .player-info {
+            flex: 1;
+            text-align: left;
+            padding: 0 10px;
+        }
+
+        .player-name {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .player-score {
+            font-weight: bold;
+            color: #764ba2;
+            font-size: 1.1em;
+        }
+
+        .empty-leaderboard {
+            text-align: center;
+            color: #999;
+            padding: 30px 10px;
+        }
+
+        @media (max-width: 900px) {
+            .game-wrapper {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .leaderboard {
+                width: 100%;
+                max-width: 460px;
+            }
+        }
+
         @media (max-width: 600px) {
             .game-container {
                 padding: 15px;
@@ -132,6 +230,11 @@
             .controls {
                 display: none;
             }
+
+            .leaderboard {
+                width: 100%;
+                max-width: 350px;
+            }
         }
 
         .game-over {
@@ -145,6 +248,7 @@
             border-radius: 20px;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
             z-index: 1000;
+            min-width: 320px;
         }
 
         .game-over.show {
@@ -165,36 +269,80 @@
         .overlay.show {
             display: block;
         }
+
+        /* 昵称输入样式 */
+        .nickname-input {
+            margin: 20px 0;
+        }
+
+        .nickname-input input {
+            padding: 12px 20px;
+            font-size: 1em;
+            border: 2px solid #667eea;
+            border-radius: 10px;
+            width: 100%;
+            max-width: 250px;
+            text-align: center;
+            outline: none;
+        }
+
+        .nickname-input input:focus {
+            border-color: #764ba2;
+        }
+
+        .nickname-input p {
+            color: #666;
+            margin-top: 10px;
+            font-size: 0.9em;
+        }
+
+        .save-btn {
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+            margin-top: 15px;
+        }
+
+        .save-btn:hover {
+            box-shadow: 0 5px 15px rgba(34, 197, 94, 0.4);
+        }
     </style>
 </head>
 <body>
-    <div class="game-container">
-        <h1>🐍 贪吃蛇</h1>
-        
-        <div class="score-board">
-            <div class="score-item">
-                <span>得分: </span><span id="score">0</span>
+    <div class="game-wrapper">
+        <div class="game-container">
+            <h1>🐍 贪吃蛇</h1>
+            
+            <div class="score-board">
+                <div class="score-item">
+                    <span>得分: </span><span id="score">0</span>
+                </div>
+                <div class="score-item">
+                    <span>最高分: </span><span id="highScore">0</span>
+                </div>
             </div>
-            <div class="score-item">
-                <span>最高分: </span><span id="highScore">0</span>
+
+            <canvas id="gameCanvas" width="400" height="400"></canvas>
+
+            <div class="controls">
+                <p>使用 <strong>方向键</strong> 或 <strong>WASD</strong> 控制蛇的移动</p>
+                <button class="btn" onclick="startGame()">开始游戏</button>
+                <button class="btn" onclick="pauseGame()">暂停</button>
+            </div>
+
+            <div class="mobile-controls">
+                <div></div>
+                <button class="mobile-btn" onclick="changeDirection('up')">↑</button>
+                <div></div>
+                <button class="mobile-btn" onclick="changeDirection('left')">←</button>
+                <button class="mobile-btn" onclick="changeDirection('down')">↓</button>
+                <button class="mobile-btn" onclick="changeDirection('right')">→</button>
             </div>
         </div>
 
-        <canvas id="gameCanvas" width="400" height="400"></canvas>
-
-        <div class="controls">
-            <p>使用 <strong>方向键</strong> 或 <strong>WASD</strong> 控制蛇的移动</p>
-            <button class="btn" onclick="startGame()">开始游戏</button>
-            <button class="btn" onclick="pauseGame()">暂停</button>
-        </div>
-
-        <div class="mobile-controls">
-            <div></div>
-            <button class="mobile-btn" onclick="changeDirection('up')">↑</button>
-            <div></div>
-            <button class="mobile-btn" onclick="changeDirection('left')">←</button>
-            <button class="mobile-btn" onclick="changeDirection('down')">↓</button>
-            <button class="mobile-btn" onclick="changeDirection('right')">→</button>
+        <div class="leaderboard">
+            <h2>🏆 排行榜</h2>
+            <ul class="leaderboard-list" id="leaderboardList">
+                <li class="empty-leaderboard">暂无记录，快来挑战吧！</li>
+            </ul>
         </div>
     </div>
 
@@ -203,7 +351,14 @@
         <h2>游戏结束！</h2>
         <p>你的得分: <strong id="finalScore">0</strong></p>
         <p id="newHighScore" style="color: #667eea; display: none;">🎉 新纪录！</p>
-        <button class="btn" onclick="restartGame()">再来一局</button>
+        
+        <div class="nickname-input" id="nicknameSection">
+            <input type="text" id="nicknameInput" placeholder="输入你的昵称" maxlength="10">
+            <p>最多10个字符</p>
+            <button class="btn save-btn" onclick="saveScore()">保存成绩</button>
+        </div>
+        
+        <button class="btn" onclick="restartGame()" id="restartBtn" style="display: none;">再来一局</button>
     </div>
 
     <script>
@@ -221,8 +376,10 @@
         let gameLoop;
         let gameRunning = false;
         let gamePaused = false;
+        let leaderboard = JSON.parse(localStorage.getItem('snakeLeaderboard')) || [];
 
         document.getElementById('highScore').textContent = highScore;
+        updateLeaderboard();
 
         function drawGame() {
             if (gamePaused) return;
@@ -425,8 +582,70 @@
                 document.getElementById('newHighScore').style.display = 'none';
             }
 
+            // 显示昵称输入区域
+            document.getElementById('nicknameSection').style.display = 'block';
+            document.getElementById('restartBtn').style.display = 'none';
+            document.getElementById('nicknameInput').value = '';
+            document.getElementById('nicknameInput').focus();
+
             document.getElementById('overlay').classList.add('show');
             document.getElementById('gameOver').classList.add('show');
+        }
+
+        function saveScore() {
+            const nickname = document.getElementById('nicknameInput').value.trim();
+            
+            if (!nickname) {
+                alert('请输入昵称！');
+                return;
+            }
+
+            // 添加到排行榜
+            const entry = {
+                name: nickname,
+                score: score,
+                date: new Date().toLocaleDateString('zh-CN')
+            };
+
+            leaderboard.push(entry);
+            
+            // 按分数排序，取前10名
+            leaderboard.sort((a, b) => b.score - a.score);
+            leaderboard = leaderboard.slice(0, 10);
+            
+            // 保存到本地存储
+            localStorage.setItem('snakeLeaderboard', JSON.stringify(leaderboard));
+            
+            // 更新排行榜显示
+            updateLeaderboard();
+
+            // 隐藏昵称输入，显示重新开始按钮
+            document.getElementById('nicknameSection').style.display = 'none';
+            document.getElementById('restartBtn').style.display = 'inline-block';
+        }
+
+        function updateLeaderboard() {
+            const list = document.getElementById('leaderboardList');
+            
+            if (leaderboard.length === 0) {
+                list.innerHTML = '<li class="empty-leaderboard">暂无记录，快来挑战吧！</li>';
+                return;
+            }
+
+            list.innerHTML = leaderboard.map((entry, index) => {
+                const rankClass = index < 3 ? `top-${index + 1}` : '';
+                const medal = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `${index + 1}`;
+                
+                return `
+                    <li class="leaderboard-item ${rankClass}">
+                        <span class="rank">${medal}</span>
+                        <div class="player-info">
+                            <div class="player-name">${entry.name}</div>
+                        </div>
+                        <span class="player-score">${entry.score}</span>
+                    </li>
+                `;
+            }).join('');
         }
 
         function restartGame() {
@@ -437,6 +656,13 @@
 
         // 初始绘制
         drawGame();
+
+        // 昵称输入框回车保存
+        document.getElementById('nicknameInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                saveScore();
+            }
+        });
     </script>
 </body>
 </html>
