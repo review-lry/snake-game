@@ -41,6 +41,87 @@
             font-size: 2.5em;
         }
 
+        /* 难度选择器 */
+        .difficulty-selector {
+            margin: 15px 0;
+        }
+
+        .difficulty-selector label {
+            color: #666;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .difficulty-btn {
+            padding: 8px 16px;
+            margin: 0 5px;
+            border: 2px solid #667eea;
+            background: white;
+            color: #667eea;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .difficulty-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .difficulty-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        /* 皮肤选择器 */
+        .skin-selector {
+            margin: 15px 0;
+        }
+
+        .skin-selector label {
+            color: #666;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .skin-btn {
+            padding: 8px 16px;
+            margin: 0 5px;
+            border: 2px solid #667eea;
+            background: white;
+            color: #667eea;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .skin-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .skin-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        /* 挑战模式 */
+        .challenge-mode {
+            margin: 10px 0;
+        }
+
+        .challenge-mode label {
+            color: #666;
+            font-weight: bold;
+        }
+
+        .challenge-mode input[type="checkbox"] {
+            margin-left: 10px;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
         .score-board {
             display: flex;
             justify-content: space-around;
@@ -134,6 +215,29 @@
             text-align: center;
         }
 
+        .leaderboard-tabs {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 15px;
+        }
+
+        .leaderboard-tab {
+            flex: 1;
+            padding: 8px;
+            border: none;
+            background: #f0f0f0;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            color: #666;
+            transition: all 0.3s;
+        }
+
+        .leaderboard-tab.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
         .leaderboard-list {
             list-style: none;
         }
@@ -196,6 +300,23 @@
             padding: 30px 10px;
         }
 
+        /* 音效控制 */
+        .sound-control {
+            margin: 10px 0;
+        }
+
+        .sound-control label {
+            color: #666;
+            font-weight: bold;
+        }
+
+        .sound-control input[type="checkbox"] {
+            margin-left: 10px;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
         @media (max-width: 900px) {
             .game-wrapper {
                 flex-direction: column;
@@ -235,6 +356,12 @@
                 width: 100%;
                 max-width: 350px;
             }
+
+            .difficulty-btn, .skin-btn {
+                padding: 6px 12px;
+                font-size: 0.9em;
+                margin: 2px;
+            }
         }
 
         .game-over {
@@ -249,6 +376,7 @@
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
             z-index: 1000;
             min-width: 320px;
+            max-width: 90vw;
         }
 
         .game-over.show {
@@ -304,6 +432,33 @@
         .save-btn:hover {
             box-shadow: 0 5px 15px rgba(34, 197, 94, 0.4);
         }
+
+        /* 挑战模式提示 */
+        .challenge-info {
+            background: linear-gradient(135deg, #ff9a56 0%, #ff6b6b 100%);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 10px;
+            margin: 10px 0;
+            font-weight: bold;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+
+        .challenge-stats {
+            display: none;
+            color: #666;
+            font-size: 0.9em;
+            margin: 5px 0;
+        }
+
+        .challenge-stats.show {
+            display: block;
+        }
     </style>
 </head>
 <body>
@@ -311,12 +466,49 @@
         <div class="game-container">
             <h1>🐍 贪吃蛇</h1>
             
+            <!-- 难度选择 -->
+            <div class="difficulty-selector">
+                <label>难度：</label>
+                <button class="difficulty-btn active" data-difficulty="easy">简单</button>
+                <button class="difficulty-btn" data-difficulty="normal">普通</button>
+                <button class="difficulty-btn" data-difficulty="hard">困难</button>
+            </div>
+
+            <!-- 皮肤选择 -->
+            <div class="skin-selector">
+                <label>主题：</label>
+                <button class="skin-btn active" data-skin="default">经典</button>
+                <button class="skin-btn" data-skin="ocean">海洋</button>
+                <button class="skin-btn" data-skin="forest">森林</button>
+                <button class="skin-btn" data-skin="sunset">日落</button>
+            </div>
+
+            <!-- 挑战模式 -->
+            <div class="challenge-mode">
+                <label>🎯 挑战模式</label>
+                <input type="checkbox" id="challengeMode">
+            </div>
+
+            <!-- 音效控制 -->
+            <div class="sound-control">
+                <label>🔊 音效</label>
+                <input type="checkbox" id="soundEnabled" checked>
+            </div>
+
+            <!-- 挑战模式信息 -->
+            <div class="challenge-info" id="challengeInfo" style="display: none;">
+                🎯 挑战模式：在60秒内获得最高分！
+            </div>
+
             <div class="score-board">
                 <div class="score-item">
                     <span>得分: </span><span id="score">0</span>
                 </div>
                 <div class="score-item">
                     <span>最高分: </span><span id="highScore">0</span>
+                </div>
+                <div class="score-item challenge-stats" id="timerDisplay">
+                    <span>⏱️ 时间: </span><span id="timer">60</span>s
                 </div>
             </div>
 
@@ -340,6 +532,10 @@
 
         <div class="leaderboard">
             <h2>🏆 排行榜</h2>
+            <div class="leaderboard-tabs">
+                <button class="leaderboard-tab active" data-tab="normal">普通</button>
+                <button class="leaderboard-tab" data-tab="challenge">挑战</button>
+            </div>
             <ul class="leaderboard-list" id="leaderboardList">
                 <li class="empty-leaderboard">暂无记录，快来挑战吧！</li>
             </ul>
@@ -351,6 +547,7 @@
         <h2>游戏结束！</h2>
         <p>你的得分: <strong id="finalScore">0</strong></p>
         <p id="newHighScore" style="color: #667eea; display: none;">🎉 新纪录！</p>
+        <p id="challengeResult" style="color: #ff6b6b; display: none;"></p>
         
         <div class="nickname-input" id="nicknameSection">
             <input type="text" id="nicknameInput" placeholder="输入你的昵称" maxlength="10">
@@ -362,27 +559,169 @@
     </div>
 
     <script>
+        // 游戏配置
+        const CONFIG = {
+            difficulties: {
+                easy: { speed: 150, name: '简单' },
+                normal: { speed: 100, name: '普通' },
+                hard: { speed: 60, name: '困难' }
+            },
+            skins: {
+                default: {
+                    bg: '#1a1a2e',
+                    grid: '#2a2a4e',
+                    snakeHead: ['#4ade80', '#22c55e'],
+                    snakeBody: ['#22c55e', '#16a34a'],
+                    food: '#ff6b6b'
+                },
+                ocean: {
+                    bg: '#0c2340',
+                    grid: '#1a3a5c',
+                    snakeHead: ['#60a5fa', '#3b82f6'],
+                    snakeBody: ['#3b82f6', '#2563eb'],
+                    food: '#f472b6'
+                },
+                forest: {
+                    bg: '#14532d',
+                    grid: '#166534',
+                    snakeHead: ['#a3e635', '#84cc16'],
+                    snakeBody: ['#84cc16', '#65a30d'],
+                    food: '#fb923c'
+                },
+                sunset: {
+                    bg: '#4c1d95',
+                    grid: '#6d28d9',
+                    snakeHead: ['#fb923c', '#f97316'],
+                    snakeBody: ['#f97316', '#ea580c'],
+                    food: '#fbbf24'
+                }
+            },
+            challengeTime: 60
+        };
+
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
         const gridSize = 20;
         const tileCount = canvas.width / gridSize;
 
+        // 游戏状态
         let snake = [{x: 10, y: 10}];
         let food = {x: 15, y: 15};
         let dx = 0;
         let dy = 0;
         let score = 0;
-        let highScore = localStorage.getItem('snakeHighScore') || 0;
+        let highScore = parseInt(localStorage.getItem('snakeHighScore')) || 0;
         let gameLoop;
         let gameRunning = false;
         let gamePaused = false;
-        let leaderboard = JSON.parse(localStorage.getItem('snakeLeaderboard')) || [];
+        let currentDifficulty = 'easy';
+        let currentSkin = 'default';
+        let soundEnabled = true;
+        let challengeMode = false;
+        let timer = CONFIG.challengeTime;
+        let timerInterval;
+        let currentTab = 'normal';
 
+        // 排行榜数据
+        let leaderboard = {
+            normal: JSON.parse(localStorage.getItem('snakeLeaderboard')) || [],
+            challenge: JSON.parse(localStorage.getItem('snakeChallengeLeaderboard')) || []
+        };
+
+        // 音效系统
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+        function playSound(type) {
+            if (!soundEnabled) return;
+
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+
+            switch(type) {
+                case 'eat':
+                    oscillator.frequency.value = 600;
+                    oscillator.type = 'sine';
+                    gainNode.gain.value = 0.3;
+                    break;
+                case 'gameover':
+                    oscillator.frequency.value = 200;
+                    oscillator.type = 'sawtooth';
+                    gainNode.gain.value = 0.2;
+                    break;
+                case 'start':
+                    oscillator.frequency.value = 400;
+                    oscillator.type = 'sine';
+                    gainNode.gain.value = 0.3;
+                    break;
+            }
+
+            oscillator.start();
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+            oscillator.stop(audioContext.currentTime + 0.1);
+        }
+
+        // 初始化
         document.getElementById('highScore').textContent = highScore;
         updateLeaderboard();
 
+        // 难度选择
+        document.querySelectorAll('.difficulty-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                if (gameRunning) return;
+                
+                document.querySelectorAll('.difficulty-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentDifficulty = btn.dataset.difficulty;
+            });
+        });
+
+        // 皮肤选择
+        document.querySelectorAll('.skin-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.skin-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentSkin = btn.dataset.skin;
+                if (!gameRunning) drawGame();
+            });
+        });
+
+        // 挑战模式
+        document.getElementById('challengeMode').addEventListener('change', (e) => {
+            challengeMode = e.target.checked;
+            const timerDisplay = document.getElementById('timerDisplay');
+            const challengeInfo = document.getElementById('challengeInfo');
+            
+            if (challengeMode) {
+                timerDisplay.classList.add('show');
+                challengeInfo.style.display = 'block';
+            } else {
+                timerDisplay.classList.remove('show');
+                challengeInfo.style.display = 'none';
+            }
+        });
+
+        // 音效控制
+        document.getElementById('soundEnabled').addEventListener('change', (e) => {
+            soundEnabled = e.target.checked;
+        });
+
+        // 排行榜标签切换
+        document.querySelectorAll('.leaderboard-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.leaderboard-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                currentTab = tab.dataset.tab;
+                updateLeaderboard();
+            });
+        });
+
         function drawGame() {
             if (gamePaused) return;
+
+            const skin = CONFIG.skins[currentSkin];
 
             // 移动蛇
             const head = {x: snake[0].x + dx, y: snake[0].y + dy};
@@ -406,17 +745,18 @@
             if (head.x === food.x && head.y === food.y) {
                 score += 10;
                 document.getElementById('score').textContent = score;
+                playSound('eat');
                 generateFood();
             } else {
                 snake.pop();
             }
 
             // 清空画布
-            ctx.fillStyle = '#1a1a2e';
+            ctx.fillStyle = skin.bg;
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
             // 绘制网格
-            ctx.strokeStyle = '#2a2a4e';
+            ctx.strokeStyle = skin.grid;
             for (let i = 0; i < tileCount; i++) {
                 ctx.beginPath();
                 ctx.moveTo(i * gridSize, 0);
@@ -429,7 +769,7 @@
             }
 
             // 绘制食物
-            ctx.fillStyle = '#ff6b6b';
+            ctx.fillStyle = skin.food;
             ctx.beginPath();
             ctx.arc(
                 food.x * gridSize + gridSize / 2,
@@ -450,11 +790,11 @@
                 );
                 
                 if (index === 0) {
-                    gradient.addColorStop(0, '#4ade80');
-                    gradient.addColorStop(1, '#22c55e');
+                    gradient.addColorStop(0, skin.snakeHead[0]);
+                    gradient.addColorStop(1, skin.snakeHead[1]);
                 } else {
-                    gradient.addColorStop(0, '#22c55e');
-                    gradient.addColorStop(1, '#16a34a');
+                    gradient.addColorStop(0, skin.snakeBody[0]);
+                    gradient.addColorStop(1, skin.snakeBody[1]);
                 }
                 
                 ctx.fillStyle = gradient;
@@ -555,11 +895,32 @@
             dx = 1;
             dy = 0;
             score = 0;
+            timer = CONFIG.challengeTime;
             document.getElementById('score').textContent = score;
+            document.getElementById('timer').textContent = timer;
             generateFood();
             gameRunning = true;
             gamePaused = false;
-            gameLoop = setInterval(drawGame, 100);
+            
+            const speed = CONFIG.difficulties[currentDifficulty].speed;
+            gameLoop = setInterval(drawGame, speed);
+            
+            playSound('start');
+
+            // 挑战模式计时器
+            if (challengeMode) {
+                clearInterval(timerInterval);
+                timerInterval = setInterval(() => {
+                    if (!gamePaused && gameRunning) {
+                        timer--;
+                        document.getElementById('timer').textContent = timer;
+                        
+                        if (timer <= 0) {
+                            gameOver(true);
+                        }
+                    }
+                }, 1000);
+            }
         }
 
         function pauseGame() {
@@ -567,9 +928,10 @@
             gamePaused = !gamePaused;
         }
 
-        function gameOver() {
+        function gameOver(timeUp = false) {
             gameRunning = false;
             clearInterval(gameLoop);
+            clearInterval(timerInterval);
             
             document.getElementById('finalScore').textContent = score;
             
@@ -581,6 +943,21 @@
             } else {
                 document.getElementById('newHighScore').style.display = 'none';
             }
+
+            // 挑战模式结果
+            const challengeResult = document.getElementById('challengeResult');
+            if (challengeMode) {
+                if (timeUp) {
+                    challengeResult.textContent = '⏰ 时间到！';
+                } else {
+                    challengeResult.textContent = `💔 游戏结束，还剩 ${timer} 秒`;
+                }
+                challengeResult.style.display = 'block';
+            } else {
+                challengeResult.style.display = 'none';
+            }
+
+            playSound('gameover');
 
             // 显示昵称输入区域
             document.getElementById('nicknameSection').style.display = 'block';
@@ -604,17 +981,22 @@
             const entry = {
                 name: nickname,
                 score: score,
+                difficulty: currentDifficulty,
                 date: new Date().toLocaleDateString('zh-CN')
             };
 
-            leaderboard.push(entry);
+            const listKey = challengeMode ? 'challenge' : 'normal';
+            leaderboard[listKey].push(entry);
             
             // 按分数排序，取前10名
-            leaderboard.sort((a, b) => b.score - a.score);
-            leaderboard = leaderboard.slice(0, 10);
+            leaderboard[listKey].sort((a, b) => b.score - a.score);
+            leaderboard[listKey] = leaderboard[listKey].slice(0, 10);
             
             // 保存到本地存储
-            localStorage.setItem('snakeLeaderboard', JSON.stringify(leaderboard));
+            localStorage.setItem(
+                challengeMode ? 'snakeChallengeLeaderboard' : 'snakeLeaderboard',
+                JSON.stringify(leaderboard[listKey])
+            );
             
             // 更新排行榜显示
             updateLeaderboard();
@@ -626,13 +1008,14 @@
 
         function updateLeaderboard() {
             const list = document.getElementById('leaderboardList');
+            const currentList = leaderboard[currentTab];
             
-            if (leaderboard.length === 0) {
+            if (currentList.length === 0) {
                 list.innerHTML = '<li class="empty-leaderboard">暂无记录，快来挑战吧！</li>';
                 return;
             }
 
-            list.innerHTML = leaderboard.map((entry, index) => {
+            list.innerHTML = currentList.map((entry, index) => {
                 const rankClass = index < 3 ? `top-${index + 1}` : '';
                 const medal = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `${index + 1}`;
                 
