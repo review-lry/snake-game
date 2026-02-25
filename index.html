@@ -364,6 +364,7 @@
             }
         }
 
+        /* 游戏结束模态框 */
         .game-over {
             display: none;
             position: fixed;
@@ -380,6 +381,26 @@
         }
 
         .game-over.show {
+            display: block;
+        }
+
+        /* 游戏开始前模态框 */
+        .start-modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            min-width: 320px;
+            max-width: 90vw;
+        }
+
+        .start-modal.show {
             display: block;
         }
 
@@ -424,15 +445,6 @@
             font-size: 0.9em;
         }
 
-        .save-btn {
-            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
-            margin-top: 15px;
-        }
-
-        .save-btn:hover {
-            box-shadow: 0 5px 15px rgba(34, 197, 94, 0.4);
-        }
-
         /* 挑战模式提示 */
         .challenge-info {
             background: linear-gradient(135deg, #ff9a56 0%, #ff6b6b 100%);
@@ -458,6 +470,23 @@
 
         .challenge-stats.show {
             display: block;
+        }
+
+        .settings-preview {
+            background: #f5f7fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            text-align: left;
+        }
+
+        .settings-preview p {
+            color: #666;
+            margin: 5px 0;
+        }
+
+        .settings-preview strong {
+            color: #333;
         }
     </style>
 </head>
@@ -516,7 +545,7 @@
 
             <div class="controls">
                 <p>使用 <strong>方向键</strong> 或 <strong>WASD</strong> 控制蛇的移动</p>
-                <button class="btn" onclick="startGame()">开始游戏</button>
+                <button class="btn" onclick="showStartModal()">开始游戏</button>
                 <button class="btn" onclick="pauseGame()">暂停</button>
             </div>
 
@@ -543,19 +572,33 @@
     </div>
 
     <div class="overlay" id="overlay"></div>
+    
+    <!-- 游戏开始前模态框 -->
+    <div class="start-modal" id="startModal">
+        <h2>🎮 准备开始</h2>
+        
+        <div class="nickname-input">
+            <input type="text" id="startNicknameInput" placeholder="输入你的昵称" maxlength="10">
+            <p>最多10个字符</p>
+        </div>
+        
+        <div class="settings-preview">
+            <p>当前设置：</p>
+            <p>难度: <strong id="startDifficulty">简单</strong></p>
+            <p>主题: <strong id="startSkin">经典</strong></p>
+            <p id="startChallengeText" style="display: none;">🎯 挑战模式: <strong>开启</strong></p>
+        </div>
+        
+        <button class="btn" onclick="startGameFromModal()">开始游戏</button>
+    </div>
+
     <div class="game-over" id="gameOver">
         <h2>游戏结束！</h2>
         <p>你的得分: <strong id="finalScore">0</strong></p>
         <p id="newHighScore" style="color: #667eea; display: none;">🎉 新纪录！</p>
         <p id="challengeResult" style="color: #ff6b6b; display: none;"></p>
         
-        <div class="nickname-input" id="nicknameSection">
-            <input type="text" id="nicknameInput" placeholder="输入你的昵称" maxlength="10">
-            <p>最多10个字符</p>
-            <button class="btn save-btn" onclick="saveScore()">保存成绩</button>
-        </div>
-        
-        <button class="btn" onclick="restartGame()" id="restartBtn" style="display: none;">再来一局</button>
+        <button class="btn" onclick="restartGame()">再来一局</button>
     </div>
 
     <script>
@@ -621,6 +664,7 @@
         let timer = CONFIG.challengeTime;
         let timerInterval;
         let currentTab = 'normal';
+        let playerNickname = '';
 
         // 排行榜数据
         let leaderboard = {
@@ -888,6 +932,48 @@
             }
         });
 
+        // 显示开始游戏模态框
+        function showStartModal() {
+            if (gameRunning) return;
+            
+            // 更新设置预览
+            document.getElementById('startDifficulty').textContent = CONFIG.difficulties[currentDifficulty].name;
+            document.getElementById('startSkin').textContent = document.querySelector(`.skin-btn[data-skin="${currentSkin}"]`).textContent;
+            
+            if (challengeMode) {
+                document.getElementById('startChallengeText').style.display = 'block';
+            } else {
+                document.getElementById('startChallengeText').style.display = 'none';
+            }
+            
+            // 清空输入框并聚焦
+            document.getElementById('startNicknameInput').value = '';
+            document.getElementById('startNicknameInput').focus();
+            
+            // 显示模态框
+            document.getElementById('overlay').classList.add('show');
+            document.getElementById('startModal').classList.add('show');
+        }
+
+        // 从模态框开始游戏
+        function startGameFromModal() {
+            const nickname = document.getElementById('startNicknameInput').value.trim();
+            
+            if (!nickname) {
+                alert('请输入昵称！');
+                return;
+            }
+            
+            playerNickname = nickname;
+            
+            // 隐藏模态框
+            document.getElementById('overlay').classList.remove('show');
+            document.getElementById('startModal').classList.remove('show');
+            
+            // 开始游戏
+            startGame();
+        }
+
         function startGame() {
             if (gameRunning) return;
 
@@ -959,27 +1045,23 @@
 
             playSound('gameover');
 
-            // 显示昵称输入区域
-            document.getElementById('nicknameSection').style.display = 'block';
-            document.getElementById('restartBtn').style.display = 'none';
-            document.getElementById('nicknameInput').value = '';
-            document.getElementById('nicknameInput').focus();
+            // 自动保存成绩
+            if (playerNickname) {
+                saveScore();
+            }
 
             document.getElementById('overlay').classList.add('show');
             document.getElementById('gameOver').classList.add('show');
         }
 
         function saveScore() {
-            const nickname = document.getElementById('nicknameInput').value.trim();
-            
-            if (!nickname) {
-                alert('请输入昵称！');
+            if (!playerNickname) {
                 return;
             }
 
             // 添加到排行榜
             const entry = {
-                name: nickname,
+                name: playerNickname,
                 score: score,
                 difficulty: currentDifficulty,
                 date: new Date().toLocaleDateString('zh-CN')
@@ -1000,10 +1082,6 @@
             
             // 更新排行榜显示
             updateLeaderboard();
-
-            // 隐藏昵称输入，显示重新开始按钮
-            document.getElementById('nicknameSection').style.display = 'none';
-            document.getElementById('restartBtn').style.display = 'inline-block';
         }
 
         function updateLeaderboard() {
@@ -1034,16 +1112,16 @@
         function restartGame() {
             document.getElementById('overlay').classList.remove('show');
             document.getElementById('gameOver').classList.remove('show');
-            startGame();
+            showStartModal();
         }
 
         // 初始绘制
         drawGame();
 
-        // 昵称输入框回车保存
-        document.getElementById('nicknameInput').addEventListener('keypress', (e) => {
+        // 昵称输入框回车开始
+        document.getElementById('startNicknameInput').addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
-                saveScore();
+                startGameFromModal();
             }
         });
     </script>
